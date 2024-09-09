@@ -8,7 +8,9 @@ public class Publisher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("Space bar pressed");
-            EventBus.Instance.Publish("OnSpacePressed");
+
+            // Publish with an integer parameter
+            EventBus.Instance.Publish("OnSpacePressed", Random.Range(1, 100));
         }
     }
 }

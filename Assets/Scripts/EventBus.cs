@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventBus : MonoBehaviour
+public class EventBus : MonoBehaviour, IEventBus
 {
     //Singleton implementation
     private static EventBus instance;
@@ -21,15 +21,14 @@ public class EventBus : MonoBehaviour
     }
 
     //Dictionary to hold events and their listeners
-    private Dictionary<string, Action> eventDictionary = new Dictionary<string, Action>();
+    private Dictionary<string, Delegate> eventDictionary = new Dictionary<string, Delegate>();
 
     //Subscribe to an event
-    public void Subscribe(string eventName, Action listener)
+    public void Subscribe<T>(string eventName, Action<T> listener)
     {
-        if(eventDictionary.TryGetValue(eventName, out Action existingEvent))
+        if(eventDictionary.TryGetValue(eventName, out Delegate existingEvent))
         {
-            existingEvent += listener;
-            eventDictionary[eventName] = existingEvent;
+            eventDictionary[eventName] = Delegate.Combine(existingEvent, listener);
         }
         else
         {
@@ -38,29 +37,32 @@ public class EventBus : MonoBehaviour
     }
 
     //Unsubscribe from an event
-    public void Unsubscribe(string eventName, Action listener)
+    public void Unsubscribe<T>(string eventName, Action<T> listener)
     {
-        if(eventDictionary.TryGetValue(eventName, out Action existingEvent))
+        if(eventDictionary.TryGetValue(eventName, out Delegate existingEvent))
         {
-            existingEvent -= listener;
-            
-            if(existingEvent == null)
+            var currentDel = Delegate.Remove(existingEvent, listener);
+
+            if(currentDel == null)
             {
                 eventDictionary.Remove(eventName);
             }
             else
             {
-                eventDictionary[eventName] = existingEvent;
+                eventDictionary[eventName] = currentDel;
             }
         }
     }
 
-    //Trigger an event
-    public void Publish(string eventName)
+    //Publish an event
+    public void Publish<T>(string eventName, T parameter)
     {
-        if(eventDictionary.TryGetValue(eventName, out Action existingEvent))
+        if(eventDictionary.TryGetValue(eventName, out Delegate existingEvent))
         {
-            existingEvent?.Invoke();
+            if(existingEvent is Action<T> action)
+            {
+                action(parameter);
+            }
         }
     }
 }

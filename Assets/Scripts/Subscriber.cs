@@ -8,7 +8,7 @@ public class Subscriber : MonoBehaviour
         if (EventBus.Instance != null)
         {
             // Subscribe to the event
-            EventBus.Instance.Subscribe("OnSpacePressed", OnSpacePressed);
+            EventBus.Instance.Subscribe<int>("OnSpacePressed", OnSpacePressed);
         }
         else
         {
@@ -22,13 +22,14 @@ public class Subscriber : MonoBehaviour
         if (EventBus.Instance != null)
         {
             // Unsubscribe from the event
-            EventBus.Instance.Unsubscribe("OnSpacePressed", OnSpacePressed);
+            EventBus.Instance.Unsubscribe<int>("OnSpacePressed", OnSpacePressed);
         }
     }
 
     // Action to perform when the event is triggered
-    private void OnSpacePressed()
+    private void OnSpacePressed(int value)
     {
         GetComponent<Renderer>().material.color = new Color(Random.value, Random.value, Random.value);
+        Debug.Log($"Space bar pressed with value: {value}");
     }
 }
