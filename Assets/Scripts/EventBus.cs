@@ -5,7 +5,6 @@ using UnityEngine;
 public class EventBus : MonoBehaviour
 {
     //Singleton implementation
-
     private static EventBus instance;
     public static EventBus Instance => instance;
 
