@@ -2,6 +2,14 @@ using UnityEngine;
 
 public class Publisher : MonoBehaviour
 {
+    private IEventBus eventBus;
+    
+    private void Start()
+    {
+        // Dependency Injection : Inject the EventBus instance
+        eventBus = EventBus.Instance;
+    }
+    
     private void Update()
     {
         // Trigger the event when tje space bar is pressed

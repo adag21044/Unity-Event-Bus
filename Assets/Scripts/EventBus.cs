@@ -6,8 +6,12 @@ public class EventBus : MonoBehaviour, IEventBus
 {
     //Singleton implementation
     private static EventBus instance;
-    public static EventBus Instance => instance;
 
+    //Dictionary to hold events and their listeners
+    public static EventBus Instance => instance ?? (instance = new GameObject("EventBus").AddComponent<EventBus>());
+    
+    private Dictionary<string, Delegate> eventDictionary = new Dictionary<string, Delegate>();
+    
     private void Awake()
     {
         if(instance != null && instance != this)
@@ -20,8 +24,6 @@ public class EventBus : MonoBehaviour, IEventBus
         DontDestroyOnLoad(gameObject);
     }
 
-    //Dictionary to hold events and their listeners
-    private Dictionary<string, Delegate> eventDictionary = new Dictionary<string, Delegate>();
 
     //Subscribe to an event
     public void Subscribe<T>(string eventName, Action<T> listener)
@@ -57,12 +59,9 @@ public class EventBus : MonoBehaviour, IEventBus
     //Publish an event
     public void Publish<T>(string eventName, T parameter)
     {
-        if(eventDictionary.TryGetValue(eventName, out Delegate existingEvent))
+        if(eventDictionary.TryGetValue(eventName, out Delegate existingEvent) && existingEvent is Action<T> action)
         {
-            if(existingEvent is Action<T> action)
-            {
-                action(parameter);
-            }
+            action.Invoke(parameter);
         }
     }
 }

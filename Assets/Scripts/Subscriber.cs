@@ -2,13 +2,16 @@ using UnityEngine;
 
 public class Subscriber : MonoBehaviour
 {
+    private IEventBus eventBus;
+
     private void OnEnable()
     {
+        eventBus = EventBus.Instance;
         // Check if the instance is not null before subscribing
-        if (EventBus.Instance != null)
+        if (eventBus != null)
         {
             // Subscribe to the event
-            EventBus.Instance.Subscribe<int>("OnSpacePressed", OnSpacePressed);
+            eventBus.Subscribe<int>("OnSpacePressed", OnSpacePressed);
         }
         else
         {
@@ -19,10 +22,10 @@ public class Subscriber : MonoBehaviour
     private void OnDisable()
     {
         // Check if the instance is not null before unsubscribing
-        if (EventBus.Instance != null)
+        if (eventBus != null)
         {
             // Unsubscribe from the event
-            EventBus.Instance.Unsubscribe<int>("OnSpacePressed", OnSpacePressed);
+            eventBus.Unsubscribe<int>("OnSpacePressed", OnSpacePressed);
         }
     }
 
